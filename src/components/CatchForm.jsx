@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import exifr from 'exifr';
 
 // Fix for default marker icon in React-Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -18,9 +19,9 @@ L.Marker.prototype.options.icon = DefaultIcon;
 function RecenterMap({ lat, lng }) {
     const map = useMap();
     React.useEffect(() => {
-        console.log("RecenterMap triggering with:", lat, lng);
-        if (lat !== null && lng !== null) {
-            map.setView([lat, lng], 13); // Changed to setView for instant snap, flyTo can sometimes be interrupted
+
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            map.setView([lat, lng], 13);
         }
     }, [lat, lng, map]);
     return null;
@@ -37,6 +38,8 @@ function LocationMarker({ position, setPosition }) {
         <Marker position={position}></Marker>
     )
 }
+
+
 
 export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onCancelEdit }) {
     const [formData, setFormData] = useState({
@@ -74,6 +77,50 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
     // Function to handle map updates
     const setMapPosition = (latlng) => {
         setFormData(prev => ({ ...prev, lat: latlng.lat, lng: latlng.lng }));
+    };
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData(prev => ({ ...prev, image: file }));
+
+            try {
+                // Parse EXIF data including GPS and Dates using exifr
+                const output = await exifr.parse(file);
+
+                if (output) {
+                    let newLat = output.latitude;
+                    let newLng = output.longitude;
+                    let newDate = output.DateTimeOriginal || output.CreateDate;
+
+                    let updatedData = {};
+
+                    if (Number.isFinite(newLat) && Number.isFinite(newLng)) {
+                        updatedData.lat = newLat;
+                        updatedData.lng = newLng;
+                        // Only auto-fill location name if empty
+                        if (!formData.location) {
+                            updatedData.location = "Från bild (GPS)";
+                        }
+                    }
+
+                    if (newDate) {
+                        const d = new Date(newDate);
+                        if (!isNaN(d.getTime())) {
+                            updatedData.catchDate = d.toISOString().slice(0, 16);
+                        }
+                    }
+
+                    if (Object.keys(updatedData).length > 0) {
+                        setFormData(prev => ({ ...prev, ...updatedData }));
+                    }
+                }
+
+
+            } catch (err) {
+                console.error("Fel vid inläsning av bild-data:", err);
+            }
+        }
     };
 
     const handleSubmit = (e) => {
@@ -202,7 +249,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+                        onChange={handleImageChange}
                     />
                 </div>
 
@@ -218,3 +265,9 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
         </div>
     );
 }
+
+
+
+
+
+
