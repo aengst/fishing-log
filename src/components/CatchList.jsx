@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CatchList({ catches }) {
+export default function CatchList({ catches, onDelete, onEdit }) {
     if (!catches || catches.length === 0) {
         return (
             <div className="card" style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
@@ -13,11 +13,30 @@ export default function CatchList({ catches }) {
         <div className="card">
             <h2>Loggbok</h2>
             {catches.map((item) => (
-                <div key={item.id} className="catch-item">
+                <div
+                    key={item.id}
+                    className="catch-item"
+                    onClick={() => onEdit(item)}
+                    style={{ cursor: 'pointer', border: '2px solid transparent', transition: 'border-color 0.2s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
+                >
                     <div>
                         <span className="catch-title">{item.species} - {item.weight} kg</span>
                         <div className="catch-details">
-                            <span>📍 {item.location || '-'}</span>
+                            {item.latitude && item.longitude ? (
+                                <a
+                                    href={`https://www.google.com/maps/search/?api=1&query=${item.latitude},${item.longitude}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: 'var(--color-accent)', textDecoration: 'none', cursor: 'pointer' }}
+                                >
+                                    📍 {item.location || 'Visa på karta'}
+                                </a>
+                            ) : (
+                                <span>📍 {item.location || '-'}</span>
+                            )}
+
                             <span>🪱 {item.bait || '-'}</span>
                         </div>
                         <div className="catch-details">
@@ -29,12 +48,32 @@ export default function CatchList({ catches }) {
                                 src={item.image_url}
                                 alt="Fångst"
                                 style={{ marginTop: '0.5rem', borderRadius: '8px', maxWidth: '200px', display: 'block' }}
+                                onError={(e) => {
+                                    console.error("Image failed to load:", item.image_url);
+                                    e.target.style.display = 'none';
+                                }}
                             />
                         )}
                     </div>
                     <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                        {new Date(item.created_at).toLocaleDateString()}
+                        {item.catch_date
+                            ? new Date(item.catch_date).toLocaleString()
+                            : new Date(item.created_at).toLocaleDateString()}
                     </span>
+                    <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={() => onEdit(item)}
+                            style={{ padding: '0.5rem', fontSize: '0.9rem', width: 'auto', backgroundColor: '#3b82f6' }}
+                        >
+                            ✏️ Ändra
+                        </button>
+                        <button
+                            onClick={() => onDelete(item.id)}
+                            style={{ padding: '0.5rem', fontSize: '0.9rem', width: 'auto', backgroundColor: '#ef4444' }}
+                        >
+                            🗑️ Ta bort
+                        </button>
+                    </div>
                 </div>
             ))}
         </div>
