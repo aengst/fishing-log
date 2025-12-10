@@ -1,5 +1,18 @@
 import React from 'react';
 
+const getWeatherIcon = (description) => {
+    if (!description) return '🌤️';
+    const lower = description.toLowerCase();
+    if (lower.includes('sol') || lower.includes('klart')) return '☀️';
+    if (lower.includes('moln') || lower.includes('mulet')) return '☁️';
+    if (lower.includes('regn') || lower.includes('skur')) return '🌧️';
+    if (lower.includes('åska')) return '⚡';
+    if (lower.includes('snö') || lower.includes('frost')) return '❄️';
+    if (lower.includes('dimma')) return '🌫️';
+    if (lower.includes('halvklart')) return '⛅';
+    return '🌤️';
+};
+
 export default function CatchList({ catches, onDelete, onEdit }) {
     if (!catches || catches.length === 0) {
         return (
@@ -40,8 +53,16 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                             <span>🪱 {item.bait || '-'}</span>
                         </div>
                         <div className="catch-details">
-                            {item.air_temp && <span>🌤️ {item.air_temp}°C</span>}
-                            {item.water_temp && <span>💧 {item.water_temp}°C</span>}
+                            {item.air_temp && <span>🌡️ Luft: {item.air_temp}°C</span>}
+                            {item.water_temp && <span>💧 Vatten: {item.water_temp}°C</span>}
+                        </div>
+                        <div className="catch-details">
+                            {item.weather_description && (
+                                <span>{getWeatherIcon(item.weather_description)} {item.weather_description}</span>
+                            )}
+                            {item.wind_speed && (
+                                <span>💨 {item.wind_speed} m/s {item.wind_direction ? `(${item.wind_direction}°)` : ''}</span>
+                            )}
                         </div>
                         {item.image_url && (
                             <img

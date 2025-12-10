@@ -63,7 +63,10 @@ function App() {
           catch_date: newCatch.catchDate ? new Date(newCatch.catchDate).toISOString() : new Date().toISOString(),
           latitude: newCatch.lat,
           longitude: newCatch.lng,
-          image_url: imageUrl
+          image_url: imageUrl,
+          wind_speed: newCatch.windSpeed ? parseFloat(newCatch.windSpeed) : null,
+          wind_direction: newCatch.windDirection ? parseFloat(newCatch.windDirection) : null,
+          weather_description: newCatch.weatherDescription || null
         }])
 
       if (error) throw error
@@ -124,7 +127,10 @@ function App() {
           catch_date: updatedData.catchDate ? new Date(updatedData.catchDate).toISOString() : null,
           latitude: updatedData.lat,
           longitude: updatedData.lng,
-          image_url: imageUrl
+          image_url: imageUrl,
+          wind_speed: updatedData.windSpeed ? parseFloat(updatedData.windSpeed) : null,
+          wind_direction: updatedData.windDirection ? parseFloat(updatedData.windDirection) : null,
+          weather_description: updatedData.weatherDescription || null
         })
         .eq('id', id)
 
