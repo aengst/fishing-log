@@ -464,7 +464,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                                     autoComplete="off"
                                     data-lpignore="true"
                                 />
-                                {formData.windDirection && (
+                                {(formData.windDirection !== null && formData.windDirection !== undefined && formData.windDirection !== '') && (
                                     <span style={{ position: 'absolute', right: '30px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.8rem', pointerEvents: 'none' }}>
                                         {getWindDirectionCardinal(formData.windDirection)}
                                     </span>
