@@ -51,8 +51,10 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
         lng: null,
         catchDate: new Date().toISOString().slice(0, 16),
         airTemp: '',
+        airTemp: '',
         waterTemp: ''
     });
+    const [isIdentifying, setIsIdentifying] = useState(false);
 
     React.useEffect(() => {
         if (editingCatch) {
@@ -195,6 +197,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
             try {
                 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
                 if (apiKey) {
+                    setIsIdentifying(true); // Start loading
                     const { GoogleGenerativeAI } = await import("@google/generative-ai");
                     const genAI = new GoogleGenerativeAI(apiKey);
                     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
@@ -227,6 +230,8 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
 
             } catch (aiErr) {
                 console.error("AI-igenkänning misslyckades:", aiErr);
+            } finally {
+                setIsIdentifying(false); // Stop loading regardless of success/fail
             }
         }
     };
@@ -401,6 +406,11 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                         autoComplete="off"
                         data-lpignore="true"
                     />
+                    {isIdentifying && (
+                        <p style={{ fontSize: '0.9rem', color: '#3b82f6', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span className="spinner">⌛</span> Identifierar fiskart med AI...
+                        </p>
+                    )}
                 </div>
 
                 {/* Weather Data (Auto-filled) */}
