@@ -153,8 +153,8 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                     const date = new Date(dateString);
                     const yyyyMmDd = date.toISOString().slice(0, 10);
 
-                    // API requires distinct start/end dates
-                    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=${yyyyMmDd}&end_date=${yyyyMmDd}&hourly=temperature_2m,weathercode,windspeed_10m,winddirection_10m`;
+                    // API requires distinct start/end dates. Default wind unit is km/h, so we force ms.
+                    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=${yyyyMmDd}&end_date=${yyyyMmDd}&hourly=temperature_2m,weathercode,windspeed_10m,winddirection_10m&windspeed_unit=ms`;
 
                     const response = await fetch(url);
                     const data = await response.json();
