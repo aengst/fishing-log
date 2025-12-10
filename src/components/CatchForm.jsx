@@ -289,6 +289,26 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                 )}
             </div>
             <form onSubmit={handleSubmit} autoComplete="off">
+                <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px border #bae6fd' }}>
+                    <label htmlFor="image" style={{ fontWeight: 'bold', color: '#0369a1' }}>📸 Börja med att ladda upp en bild</label>
+                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
+                        Vi försöker identifiera arten, platsen och vädret automatiskt!
+                    </p>
+                    <input
+                        id="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        autoComplete="off"
+                        data-lpignore="true"
+                        style={{ backgroundColor: 'white' }}
+                    />
+                    {isIdentifying && (
+                        <p style={{ fontSize: '0.9rem', color: '#3b82f6', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span className="spinner">⌛</span> Identifierar fiskart med AI...
+                        </p>
+                    )}
+                </div>
                 <div className="form-grid">
                     <div>
                         <label htmlFor="species">Art</label>
@@ -412,22 +432,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                     </div>
                 </div>
 
-                <div>
-                    <label htmlFor="image">Bild</label>
-                    <input
-                        id="image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        autoComplete="off"
-                        data-lpignore="true"
-                    />
-                    {isIdentifying && (
-                        <p style={{ fontSize: '0.9rem', color: '#3b82f6', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span className="spinner">⌛</span> Identifierar fiskart med AI...
-                        </p>
-                    )}
-                </div>
+
 
                 {/* Weather Data (Auto-filled) */}
                 <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
