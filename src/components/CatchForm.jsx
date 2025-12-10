@@ -403,34 +403,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                     />
                 </div>
 
-                <div className="form-grid">
-                    <div>
-                        <label htmlFor="airTemp">Lufttemp (°C)</label>
-                        <input
-                            id="airTemp"
-                            name="airTemp"
-                            type="number"
-                            placeholder="20"
-                            value={formData.airTemp}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            data-lpignore="true"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="waterTemp">Vattentemp (°C)</label>
-                        <input
-                            id="waterTemp"
-                            name="waterTemp"
-                            type="number"
-                            placeholder="15"
-                            value={formData.waterTemp}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            data-lpignore="true"
-                        />
-                    </div>
-                </div>
+
 
 
 
@@ -438,6 +411,32 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                 <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
                     <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem' }}>🌍 Väderdata (Hämtas automatiskt)</h3>
                     <div className="form-grid">
+                        <div>
+                            <label htmlFor="airTemp">Lufttemp (°C)</label>
+                            <input
+                                id="airTemp"
+                                name="airTemp"
+                                type="number"
+                                placeholder="20"
+                                value={formData.airTemp}
+                                onChange={handleChange}
+                                autoComplete="off"
+                                data-lpignore="true"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="waterTemp">Vattentemp (°C)</label>
+                            <input
+                                id="waterTemp"
+                                name="waterTemp"
+                                type="number"
+                                placeholder="15"
+                                value={formData.waterTemp}
+                                onChange={handleChange}
+                                autoComplete="off"
+                                data-lpignore="true"
+                            />
+                        </div>
                         <div>
                             <label htmlFor="weatherDescription">Väderlek</label>
                             <input
