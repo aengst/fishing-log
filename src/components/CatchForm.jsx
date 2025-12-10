@@ -176,14 +176,21 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                             80: 'Regnskurar', 81: 'Kraftiga regnskurar', 95: 'Åska'
                         };
 
+                        // Snap wind direction to nearest cardinal (0, 45, 90...)
+                        const snapToCardinal = (deg) => {
+                            if (deg === null || deg === undefined) return null;
+                            const val = Math.round(deg / 45) * 45;
+                            return val === 360 ? 0 : val;
+                        };
+
                         setFormData(prev => ({
                             ...prev,
                             airTemp: temp,
                             windSpeed: wind,
-                            windDirection: dir,
+                            windDirection: snapToCardinal(dir),
                             weatherDescription: weatherMap[code] || `Kod ${code}`
                         }));
-                        console.log("🌦️ Väder hämtat:", { temp, wind, dir, code });
+                        console.log("🌦️ Väder hämtat:", { temp, wind, dir, snappedDir: snapToCardinal(dir), code });
                     }
                 } catch (weatherErr) {
                     console.error("Kunde inte hämta väder:", weatherErr);
@@ -453,23 +460,33 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                         </div>
                         <div>
                             <label htmlFor="windDirection">Vindriktning</label>
-                            <div style={{ position: 'relative' }}>
-                                <input
-                                    id="windDirection"
-                                    name="windDirection"
-                                    type="number"
-                                    placeholder="180"
-                                    value={formData.windDirection || ''}
-                                    onChange={handleChange}
-                                    autoComplete="off"
-                                    data-lpignore="true"
-                                />
-                                {(formData.windDirection !== null && formData.windDirection !== undefined && formData.windDirection !== '') && (
-                                    <span style={{ position: 'absolute', right: '30px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.8rem', pointerEvents: 'none' }}>
-                                        {getWindDirectionCardinal(formData.windDirection)}
-                                    </span>
-                                )}
-                            </div>
+                            <select
+                                id="windDirection"
+                                name="windDirection"
+                                value={formData.windDirection !== null ? formData.windDirection : ''}
+                                onChange={handleChange}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    borderRadius: '12px',
+                                    border: '1px solid var(--color-border)',
+                                    backgroundColor: 'var(--color-input-bg)',
+                                    color: 'var(--color-text-main)',
+                                    fontSize: '1rem',
+                                    marginBottom: '1rem',
+                                    appearance: 'none', /* Custom arrow needed if we want full custom style, but default is fine for now */
+                                }}
+                            >
+                                <option value="">Välj riktning...</option>
+                                <option value="0">Nord (N)</option>
+                                <option value="45">Nordost (NO)</option>
+                                <option value="90">Ost (O)</option>
+                                <option value="135">Sydost (SO)</option>
+                                <option value="180">Syd (S)</option>
+                                <option value="225">Sydväst (SV)</option>
+                                <option value="270">Väst (V)</option>
+                                <option value="315">Nordväst (NV)</option>
+                            </select>
                         </div>
                     </div>
                 </div>
