@@ -68,7 +68,7 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                                 <span>{getWeatherIcon(item.weather_description)} {item.weather_description}</span>
                             )}
                             {item.wind_speed && (
-                                <span>💨 {item.wind_speed} m/s {(item.wind_direction !== null && item.wind_direction !== undefined) ? `(${getWindDirectionCardinal(item.wind_direction)})` : ''}</span>
+                                <span>🌬️ {item.wind_speed} m/s {(item.wind_direction !== null && item.wind_direction !== undefined) ? `(${getWindDirectionCardinal(item.wind_direction)})` : ''}</span>
                             )}
                         </div>
                         {item.image_url && (
