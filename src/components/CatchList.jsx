@@ -17,7 +17,7 @@ const getWindDirectionCardinal = (degrees) => {
     if (degrees === undefined || degrees === null) return '';
     const directions = ['N', 'NO', 'O', 'SO', 'S', 'SV', 'V', 'NV'];
     const index = Math.round(degrees / 45) % 8;
-    return `${directions[index]} (${degrees}°)`;
+    return directions[index];
 };
 
 export default function CatchList({ catches, onDelete, onEdit }) {

@@ -452,7 +452,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                             />
                         </div>
                         <div>
-                            <label htmlFor="windDirection">Vindriktning (°)</label>
+                            <label htmlFor="windDirection">Vindriktning</label>
                             <div style={{ position: 'relative' }}>
                                 <input
                                     id="windDirection"
