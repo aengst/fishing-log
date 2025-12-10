@@ -41,7 +41,16 @@ function LocationMarker({ position, setPosition }) {
 
 
 
+
 export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onCancelEdit }) {
+
+    const getWindDirectionCardinal = (degrees) => {
+        if (!degrees && degrees !== 0) return '';
+        const directions = ['N', 'NO', 'O', 'SO', 'S', 'SV', 'V', 'NV'];
+        const index = Math.round(degrees / 45) % 8;
+        return directions[index];
+    };
+
     const [formData, setFormData] = useState({
         species: '',
         weight: '',
@@ -444,16 +453,23 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                         </div>
                         <div>
                             <label htmlFor="windDirection">Vindriktning (°)</label>
-                            <input
-                                id="windDirection"
-                                name="windDirection"
-                                type="number"
-                                placeholder="180"
-                                value={formData.windDirection || ''}
-                                onChange={handleChange}
-                                autoComplete="off"
-                                data-lpignore="true"
-                            />
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    id="windDirection"
+                                    name="windDirection"
+                                    type="number"
+                                    placeholder="180"
+                                    value={formData.windDirection || ''}
+                                    onChange={handleChange}
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                />
+                                {formData.windDirection && (
+                                    <span style={{ position: 'absolute', right: '30px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '0.8rem', pointerEvents: 'none' }}>
+                                        {getWindDirectionCardinal(formData.windDirection)}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

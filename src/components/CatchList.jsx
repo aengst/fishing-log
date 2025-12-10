@@ -13,6 +13,13 @@ const getWeatherIcon = (description) => {
     return '🌤️';
 };
 
+const getWindDirectionCardinal = (degrees) => {
+    if (degrees === undefined || degrees === null) return '';
+    const directions = ['N', 'NO', 'O', 'SO', 'S', 'SV', 'V', 'NV'];
+    const index = Math.round(degrees / 45) % 8;
+    return `${directions[index]} (${degrees}°)`;
+};
+
 export default function CatchList({ catches, onDelete, onEdit }) {
     if (!catches || catches.length === 0) {
         return (
@@ -61,7 +68,7 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                                 <span>{getWeatherIcon(item.weather_description)} {item.weather_description}</span>
                             )}
                             {item.wind_speed && (
-                                <span>💨 {item.wind_speed} m/s {item.wind_direction ? `(${item.wind_direction}°)` : ''}</span>
+                                <span>💨 {item.wind_speed} m/s {item.wind_direction ? `(${getWindDirectionCardinal(item.wind_direction)})` : ''}</span>
                             )}
                         </div>
                         {item.image_url && (
