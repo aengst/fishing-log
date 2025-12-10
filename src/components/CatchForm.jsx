@@ -42,7 +42,9 @@ function LocationMarker({ position, setPosition }) {
 
 
 
-export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onCancelEdit }) {
+export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, isEditing, onStartEdit, onCancelEdit, onClose }) {
+
+    const readOnly = selectedCatch && !isEditing;
 
     const getWindDirectionCardinal = (degrees) => {
         if (!degrees && degrees !== 0) return '';
@@ -61,24 +63,26 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
         lng: null,
         catchDate: new Date().toISOString().slice(0, 16),
         airTemp: '',
-        airTemp: '',
         waterTemp: ''
     });
     const [isIdentifying, setIsIdentifying] = useState(false);
 
     React.useEffect(() => {
-        if (editingCatch) {
+        if (selectedCatch) {
             setFormData({
-                species: editingCatch.species || '',
-                weight: editingCatch.weight || '',
-                length: editingCatch.length || '',
-                bait: editingCatch.bait || '',
-                location: editingCatch.location || '',
-                lat: editingCatch.latitude ? parseFloat(editingCatch.latitude) : null,
-                lng: editingCatch.longitude ? parseFloat(editingCatch.longitude) : null,
-                catchDate: editingCatch.catch_date ? new Date(editingCatch.catch_date).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
-                airTemp: editingCatch.air_temp || '',
-                waterTemp: editingCatch.water_temp || ''
+                species: selectedCatch.species || '',
+                weight: selectedCatch.weight || '',
+                length: selectedCatch.length || '',
+                bait: selectedCatch.bait || '',
+                location: selectedCatch.location || '',
+                lat: selectedCatch.latitude ? parseFloat(selectedCatch.latitude) : null,
+                lng: selectedCatch.longitude ? parseFloat(selectedCatch.longitude) : null,
+                catchDate: selectedCatch.catch_date ? new Date(selectedCatch.catch_date).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
+                airTemp: selectedCatch.air_temp || '',
+                waterTemp: selectedCatch.water_temp || '',
+                windSpeed: selectedCatch.wind_speed || '',
+                windDirection: selectedCatch.wind_direction,
+                weatherDescription: selectedCatch.weather_description || ''
             })
         } else {
             setFormData({
@@ -91,10 +95,13 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                 lng: null,
                 catchDate: new Date().toISOString().slice(0, 16),
                 airTemp: '',
-                waterTemp: ''
+                waterTemp: '',
+                windSpeed: '',
+                windDirection: '',
+                weatherDescription: ''
             });
         }
-    }, [editingCatch])
+    }, [selectedCatch])
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -257,13 +264,13 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (editingCatch) {
-            onUpdateCatch(editingCatch.id, formData);
+        if (selectedCatch && isEditing) {
+            onUpdateCatch(selectedCatch.id, formData);
         } else {
             onAddCatch(formData);
         }
 
-        if (!editingCatch) {
+        if (!selectedCatch) {
             setFormData({
                 species: '', weight: '', length: '', bait: '', location: '', catchDate: new Date().toISOString().slice(0, 16), airTemp: '', waterTemp: ''
             });
@@ -271,254 +278,317 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
     };
 
     return (
-        <div className="card">
+        <div className={`card ${readOnly ? 'read-only-mode' : ''}`}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2 style={{ margin: 0 }}>{editingCatch ? 'Redigera Fångst' : 'Ny Fångst'}</h2>
-                {editingCatch && (
+                <h2 style={{ margin: 0 }}>
+                    {selectedCatch
+                        ? (isEditing ? 'Redigera Fångst' : 'Fångstdetaljer')
+                        : 'Ny Fångst'}
+                </h2>
+                {readOnly && (
                     <button
                         type="button"
-                        onClick={onCancelEdit}
+                        onClick={onClose}
                         style={{
                             backgroundColor: 'transparent',
                             border: '1px solid var(--color-border)',
-                            color: 'var(--color-text)',
+                            color: 'var(--color-text-main)',
                             fontSize: '0.9rem',
                             padding: '0.4rem 0.8rem',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            width: 'auto'
                         }}
                     >
-                        ➕ Ny Fångst
+                        ❌ Stäng
                     </button>
+                )}
+                {!selectedCatch && (
+                    <span></span> // Spacer
                 )}
             </div>
             <form onSubmit={handleSubmit} autoComplete="off">
-                <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '12px', border: '1px border #bae6fd' }}>
-                    <label htmlFor="image" style={{ fontWeight: 'bold', color: '#0369a1' }}>📸 Börja med att ladda upp en bild</label>
-                    <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
-                        Vi försöker identifiera arten, platsen och vädret automatiskt!
-                    </p>
-                    <input
-                        id="image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        autoComplete="off"
-                        data-lpignore="true"
-                        style={{ backgroundColor: 'white' }}
-                    />
-                    {isIdentifying && (
-                        <p style={{ fontSize: '0.9rem', color: '#3b82f6', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span className="spinner">⌛</span> Identifierar fiskart med AI...
-                        </p>
+                <fieldset disabled={readOnly} style={{ border: 'none', padding: 0, margin: 0 }}>
+                    {!readOnly && (
+                        <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'rgba(56, 189, 248, 0.1)', borderRadius: '12px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+                            <label htmlFor="image" style={{ fontWeight: 'bold', color: 'var(--color-accent)' }}>📸 Ladda upp bild</label>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>
+                                Vi identifierar art, plats och väder automatiskt!
+                            </p>
+                            <input
+                                id="image"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                autoComplete="off"
+                                data-lpignore="true"
+                                style={{ backgroundColor: 'var(--color-input-bg)' }}
+                            />
+                            {isIdentifying && (
+                                <p style={{ fontSize: '0.9rem', color: 'var(--color-accent)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <span className="spinner">⌛</span> Identifierar fiskart med AI...
+                                </p>
+                            )}
+                        </div>
                     )}
-                </div>
-                <div style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="species">Art</label>
-                    <input
-                        id="species"
-                        name="species"
-                        placeholder="T.ex. Gädda"
-                        required
-                        value={formData.species}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        data-lpignore="true"
-                    />
-                </div>
 
-                <div className="form-grid">
-                    <div>
-                        <label htmlFor="weight">Vikt (kg)</label>
+                    {readOnly && selectedCatch && selectedCatch.image_url && (
+                        <div style={{ marginBottom: '1.5rem', borderRadius: '12px', overflow: 'hidden' }}>
+                            <img src={selectedCatch.image_url} alt="Fångst" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', backgroundColor: '#000' }} />
+                        </div>
+                    )}
+
+                    <div style={{ marginBottom: '1rem' }}>
+                        <label htmlFor="species">Art</label>
                         <input
-                            id="weight"
-                            name="weight"
-                            type="number"
-                            step="0.1"
-                            placeholder="0.0"
+                            id="species"
+                            name="species"
+                            placeholder="T.ex. Gädda"
                             required
-                            value={formData.weight}
+                            value={formData.species}
                             onChange={handleChange}
                             autoComplete="off"
                             data-lpignore="true"
                         />
                     </div>
-                    <div>
-                        <label htmlFor="length">Längd (cm)</label>
-                        <input
-                            id="length"
-                            name="length"
-                            type="number"
-                            step="1"
-                            placeholder="0"
-                            value={formData.length}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            data-lpignore="true"
-                        />
-                    </div>
-                </div>
 
-                <div className="form-grid">
-                    <div>
-                        <label htmlFor="catchDate">Datum & Tid</label>
-                        <input
-                            id="catchDate"
-                            name="catchDate"
-                            type="datetime-local"
-                            required
-                            value={formData.catchDate}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            data-lpignore="true"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="location">Plats (Namn)</label>
-                        <input
-                            id="location"
-                            name="location"
-                            placeholder="T.ex. Mälaren"
-                            value={formData.location}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            data-lpignore="true"
-                        />
-                    </div>
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                    <label>Välj på karta (Klicka för att markera)</label>
-                    <div style={{ height: '300px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
-                        <MapContainer
-                            center={[59.3293, 18.0686]}
-                            zoom={6}
-                            style={{ height: '100%', width: '100%' }}
-                        >
-                            <TileLayer
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            />
-                            <RecenterMap lat={formData.lat} lng={formData.lng} />
-                            <LocationMarker
-                                position={formData.lat ? [formData.lat, formData.lng] : null}
-                                setPosition={setMapPosition}
-                            />
-                        </MapContainer>
-                    </div>
-                    {formData.lat && <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.5rem' }}>Vald position: {formData.lat.toFixed(4)}, {formData.lng.toFixed(4)}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="bait">Bete</label>
-                    <input
-                        id="bait"
-                        name="bait"
-                        placeholder="T.ex. Jigg, Mask"
-                        value={formData.bait}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        data-lpignore="true"
-                    />
-                </div>
-
-
-
-
-
-                {/* Weather Data (Auto-filled) */}
-                <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-                    <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem' }}>🌍 Väderdata (Hämtas automatiskt)</h3>
                     <div className="form-grid">
                         <div>
-                            <label htmlFor="airTemp">Lufttemp (°C)</label>
+                            <label htmlFor="weight">Vikt (kg)</label>
                             <input
-                                id="airTemp"
-                                name="airTemp"
+                                id="weight"
+                                name="weight"
                                 type="number"
-                                placeholder="20"
-                                value={formData.airTemp}
+                                step="0.1"
+                                placeholder="0.0"
+                                required
+                                value={formData.weight}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 data-lpignore="true"
                             />
                         </div>
                         <div>
-                            <label htmlFor="waterTemp">Vattentemp (°C)</label>
+                            <label htmlFor="length">Längd (cm)</label>
                             <input
-                                id="waterTemp"
-                                name="waterTemp"
+                                id="length"
+                                name="length"
                                 type="number"
-                                placeholder="15"
-                                value={formData.waterTemp}
+                                step="1"
+                                placeholder="0"
+                                value={formData.length}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 data-lpignore="true"
                             />
-                        </div>
-                        <div>
-                            <label htmlFor="weatherDescription">Väderlek</label>
-                            <input
-                                id="weatherDescription"
-                                name="weatherDescription"
-                                placeholder="T.ex. Halvklart"
-                                value={formData.weatherDescription || ''}
-                                onChange={handleChange}
-                                autoComplete="off"
-                                data-lpignore="true"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="windSpeed">Vindstyrka (m/s)</label>
-                            <input
-                                id="windSpeed"
-                                name="windSpeed"
-                                type="number"
-                                placeholder="5.0"
-                                value={formData.windSpeed || ''}
-                                onChange={handleChange}
-                                autoComplete="off"
-                                data-lpignore="true"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="windDirection">Vindriktning</label>
-                            <select
-                                id="windDirection"
-                                name="windDirection"
-                                value={formData.windDirection !== null ? formData.windDirection : ''}
-                                onChange={handleChange}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.75rem',
-                                    borderRadius: '12px',
-                                    border: '1px solid var(--color-border)',
-                                    backgroundColor: 'var(--color-input-bg)',
-                                    color: 'var(--color-text-main)',
-                                    fontSize: '1rem',
-                                    marginBottom: '1rem',
-                                    appearance: 'none', /* Custom arrow needed if we want full custom style, but default is fine for now */
-                                }}
-                            >
-                                <option value="">Välj riktning...</option>
-                                <option value="0">Nord (N)</option>
-                                <option value="45">Nordost (NO)</option>
-                                <option value="90">Ost (O)</option>
-                                <option value="135">Sydost (SO)</option>
-                                <option value="180">Syd (S)</option>
-                                <option value="225">Sydväst (SV)</option>
-                                <option value="270">Väst (V)</option>
-                                <option value="315">Nordväst (NV)</option>
-                            </select>
                         </div>
                     </div>
-                </div>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button type="submit">{editingCatch ? 'Uppdatera' : 'Spara Fångst'}</button>
-                    {editingCatch && (
-                        <button type="button" onClick={onCancelEdit} style={{ backgroundColor: '#64748b' }}>
-                            Avbryt
-                        </button>
+                    <div className="form-grid">
+                        <div>
+                            <label htmlFor="catchDate">Datum & Tid</label>
+                            <input
+                                id="catchDate"
+                                name="catchDate"
+                                type="datetime-local"
+                                required
+                                value={formData.catchDate}
+                                onChange={handleChange}
+                                autoComplete="off"
+                                data-lpignore="true"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="location">Plats (Namn)</label>
+                            <input
+                                id="location"
+                                name="location"
+                                placeholder="T.ex. Mälaren"
+                                value={formData.location}
+                                onChange={handleChange}
+                                autoComplete="off"
+                                data-lpignore="true"
+                            />
+                        </div>
+                    </div>
+
+                    <div style={{ marginBottom: '1rem' }}>
+                        <label>Kartposition</label>
+                        <div style={{ height: '300px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--color-border)', position: 'relative', pointerEvents: readOnly ? 'none' : 'auto' }}>
+                            <MapContainer
+                                center={[59.3293, 18.0686]}
+                                zoom={6}
+                                style={{ height: '100%', width: '100%' }}
+                                dragging={!readOnly}
+                                touchZoom={!readOnly}
+                                doubleClickZoom={!readOnly}
+                                scrollWheelZoom={!readOnly}
+                                zoomControl={!readOnly}
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                />
+                                <RecenterMap lat={formData.lat} lng={formData.lng} />
+                                <LocationMarker
+                                    position={formData.lat ? [formData.lat, formData.lng] : null}
+                                    setPosition={setMapPosition}
+                                />
+                            </MapContainer>
+                        </div>
+                        {formData.lat && <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.5rem' }}>Vald position: {formData.lat.toFixed(4)}, {formData.lng.toFixed(4)}</p>}
+                    </div>
+
+                    <div>
+                        <label htmlFor="bait">Bete</label>
+                        <input
+                            id="bait"
+                            name="bait"
+                            placeholder="T.ex. Jigg, Mask"
+                            value={formData.bait}
+                            onChange={handleChange}
+                            autoComplete="off"
+                            data-lpignore="true"
+                        />
+                    </div>
+
+                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem' }}>🌍 Väderdata</h3>
+                        <div className="form-grid">
+                            <div>
+                                <label htmlFor="airTemp">Lufttemp (°C)</label>
+                                <input
+                                    id="airTemp"
+                                    name="airTemp"
+                                    type="number"
+                                    placeholder="20"
+                                    value={formData.airTemp}
+                                    onChange={handleChange}
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="waterTemp">Vattentemp (°C)</label>
+                                <input
+                                    id="waterTemp"
+                                    name="waterTemp"
+                                    type="number"
+                                    placeholder="15"
+                                    value={formData.waterTemp}
+                                    onChange={handleChange}
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="weatherDescription">Väderlek</label>
+                                <input
+                                    id="weatherDescription"
+                                    name="weatherDescription"
+                                    placeholder="T.ex. Halvklart"
+                                    value={formData.weatherDescription || ''}
+                                    onChange={handleChange}
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="windSpeed">Vindstyrka (m/s)</label>
+                                <input
+                                    id="windSpeed"
+                                    name="windSpeed"
+                                    type="number"
+                                    placeholder="5.0"
+                                    value={formData.windSpeed || ''}
+                                    onChange={handleChange}
+                                    autoComplete="off"
+                                    data-lpignore="true"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="windDirection">Vindriktning</label>
+                                {readOnly ? (
+                                    <input
+                                        value={getWindDirectionCardinal(formData.windDirection) || ''}
+                                        disabled
+                                        className="read-only-input"
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: 'none',
+                                            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                            backgroundColor: 'transparent',
+                                            color: 'var(--color-text-main)',
+                                            fontSize: '1rem',
+                                        }}
+                                    />
+                                ) : (
+                                    <select
+                                        id="windDirection"
+                                        name="windDirection"
+                                        value={formData.windDirection !== null ? formData.windDirection : ''}
+                                        onChange={handleChange}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            borderRadius: '12px',
+                                            border: '1px solid var(--color-border)',
+                                            backgroundColor: 'var(--color-input-bg)',
+                                            color: 'var(--color-text-main)',
+                                            fontSize: '1rem',
+                                            marginBottom: '1rem',
+                                            appearance: 'none',
+                                        }}
+                                    >
+                                        <option value="">Välj riktning...</option>
+                                        <option value="0">Nord (N)</option>
+                                        <option value="45">Nordost (NO)</option>
+                                        <option value="90">Ost (O)</option>
+                                        <option value="135">Sydost (SO)</option>
+                                        <option value="180">Syd (S)</option>
+                                        <option value="225">Sydväst (SV)</option>
+                                        <option value="270">Väst (V)</option>
+                                        <option value="315">Nordväst (NV)</option>
+                                    </select>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    {readOnly ? (
+                        <>
+                            <button
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); onStartEdit(); }}
+                                style={{ flex: 1 }}
+                            >
+                                ✏️ Ändra
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                style={{ flex: 1, backgroundColor: 'transparent', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}
+                            >
+                                Stäng
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button type="submit" style={{ flex: 1 }}>
+                                {isEditing ? 'Uppdatera' : 'Spara Fångst'}
+                            </button>
+                            {isEditing && (
+                                <button
+                                    type="button"
+                                    onClick={onCancelEdit}
+                                    style={{ flex: 1, backgroundColor: '#64748b', color: '#ffffff' }}
+                                >
+                                    Avbryt
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
             </form>

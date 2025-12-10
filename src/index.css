@@ -170,7 +170,7 @@ button:active {
 .catch-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   margin-bottom: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-bottom: 0.75rem;
@@ -214,17 +214,37 @@ button:active {
   color: #cbd5e1;
 }
 
-.catch-image-thumb {
-  width: 80px;
-  height: 80px;
+.catch-image-container {
+  width: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  border-left: 1px solid var(--color-border);
+}
+
+.catch-image-full {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .catch-card {
+    flex-direction: column !important;
+  }
+
+  .catch-image-container {
+    width: 100%;
+    height: 250px;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+  }
 }
 
 .catch-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.75rem;
   margin-top: 1rem;
   padding-top: 1rem;
@@ -256,4 +276,24 @@ button:active {
 
 .btn-primary-ghost:hover {
   background: rgba(56, 189, 248, 0.2);
+}
+
+/* Read Only Mode Styles */
+.read-only-mode input:disabled,
+.read-only-mode select:disabled,
+.read-only-mode textarea:disabled {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-main);
+  opacity: 1;
+  padding-left: 0;
+  cursor: default;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: none !important;
+}
+
+.read-only-mode label {
+  color: var(--color-accent);
 }

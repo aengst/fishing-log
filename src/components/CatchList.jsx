@@ -20,7 +20,7 @@ const getWindDirectionCardinal = (degrees) => {
     return directions[index];
 };
 
-export default function CatchList({ catches, onDelete, onEdit }) {
+export default function CatchList({ catches, onDelete, onView }) {
     if (!catches || catches.length === 0) {
         return (
             <div className="empty-state">
@@ -48,25 +48,29 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                     <div
                         key={item.id}
                         className="catch-card"
+                        onClick={() => onView(item)}
+                        style={{ cursor: 'pointer', display: 'flex', flexDirection: 'row', padding: 0, overflow: 'hidden' }}
                     >
-                        {/* Header: Species & Date */}
-                        <div className="catch-header">
-                            <span className="catch-species">{item.species}</span>
-                            <span className="catch-date">
-                                {item.catch_date
-                                    ? new Date(item.catch_date).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' })
-                                    : new Date(item.created_at).toLocaleDateString('sv-SE')}
-                            </span>
-                        </div>
+                        {/* Left Side: Content */}
+                        <div style={{ flex: 1, padding: '1.25rem', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                            {/* Header: Species & Date */}
+                            <div className="catch-header" style={{ flexDirection: 'column', gap: '0.25rem' }}>
+                                <span className="catch-species">{item.species}</span>
+                                <span className="catch-date">
+                                    {item.catch_date
+                                        ? new Date(item.catch_date).toLocaleString('sv-SE', { dateStyle: 'short', timeStyle: 'short' })
+                                        : new Date(item.created_at).toLocaleDateString('sv-SE')}
+                                </span>
+                            </div>
 
-                        {/* Body: Stats & Image */}
-                        <div className="catch-body">
-                            <div className="catch-info">
+                            {/* Body: Stats */}
+                            <div className="catch-info" style={{ flex: 1 }}>
                                 {/* Stats Row 1: Weight, Length, Temp */}
                                 <div className="catch-stats-row">
                                     <span className="catch-stat" title="Vikt">⚖️ {item.weight} kg</span>
                                     {item.length && <span className="catch-stat" title="Längd">📏 {item.length} cm</span>}
-                                    {item.air_temp && <span className="catch-stat" title="Lufttemperatur">🌡️ {item.air_temp}°C</span>}
+                                    {item.air_temp && <span className="catch-stat" title="Lufttemperatur">🌡️ {item.air_temp}°C (Luft)</span>}
+                                    {item.water_temp && <span className="catch-stat" title="Vattentemperatur">💧 {item.water_temp}°C (Vatten)</span>}
                                 </div>
 
                                 {/* Stats Row 2: Location & Bait */}
@@ -77,6 +81,7 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="catch-stat"
+                                            onClick={(e) => e.stopPropagation()}
                                             style={{ textDecoration: 'none', color: 'var(--color-accent)' }}
                                         >
                                             📍 {item.location || 'Visa karta'}
@@ -105,35 +110,32 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                                 </div>
                             </div>
 
-                            {/* Image Thumbnail */}
-                            {item.image_url && (
-                                <div onClick={() => window.open(item.image_url, '_blank')} style={{ cursor: 'pointer' }}>
-                                    <img
-                                        src={item.image_url}
-                                        alt="Fångst"
-                                        className="catch-image-thumb"
-                                        onError={(e) => { e.target.style.display = 'none'; }}
-                                    />
-                                </div>
-                            )}
+                            {/* Footer: Actions */}
+                            <div className="catch-actions">
+                                <button
+                                    className="btn-icon"
+                                    onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+                                    style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                                >
+                                    🗑️ Ta bort
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Footer: Actions */}
-                        <div className="catch-actions">
-                            <button
-                                className="btn-icon"
-                                onClick={() => onEdit(item)}
+                        {/* Right Side: Image */}
+                        {item.image_url && (
+                            <div
+                                className="catch-image-container"
+                                onClick={(e) => { e.stopPropagation(); window.open(item.image_url, '_blank'); }}
                             >
-                                ✏️ Ändra
-                            </button>
-                            <button
-                                className="btn-icon"
-                                onClick={() => onDelete(item.id)}
-                                style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
-                            >
-                                🗑️ Ta bort
-                            </button>
-                        </div>
+                                <img
+                                    src={item.image_url}
+                                    alt="Fångst"
+                                    className="catch-image-full"
+                                    onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.display = 'none'; }}
+                                />
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

@@ -8,7 +8,8 @@ import './index.css'
 function App() {
   const [catches, setCatches] = useState([])
   const [loading, setLoading] = useState(true)
-  const [editingCatch, setEditingCatch] = useState(null)
+  const [selectedCatch, setSelectedCatch] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     fetchCatches()
@@ -87,18 +88,45 @@ function App() {
         .eq('id', id)
 
       if (error) throw error
+      if (selectedCatch && selectedCatch.id === id) {
+        setSelectedCatch(null);
+        setIsEditing(false);
+      }
       fetchCatches()
     } catch (error) {
       alert('Kunde inte ta bort: ' + error.message)
     }
   }
 
+  const viewCatch = (catchItem) => {
+    setSelectedCatch(catchItem);
+    setIsEditing(false); // Default to read-only view
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const startEditing = () => {
+    if (selectedCatch) {
+      setIsEditing(true);
+    }
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    // If we were just viewing, stay on selectedCatch but read-only.
+  };
+
+  const closeSelection = () => {
+    setSelectedCatch(null);
+    setIsEditing(false);
+  }
+
+
   const updateCatch = async (id, updatedData) => {
     try {
       // Handle image update if needed (omitted for brevity, user can delete/re-upload or we add complex logic later)
       // For now we update fields
 
-      let imageUrl = editingCatch.image_url // Keep old image by default
+      let imageUrl = selectedCatch.image_url // Keep old image by default
 
       if (updatedData.image) {
         const fileExt = updatedData.image.name.split('.').pop()
@@ -137,8 +165,24 @@ function App() {
         .eq('id', id)
 
       if (error) throw error
-      setEditingCatch(null) // Exit edit mode
-      fetchCatches()
+
+      // Update local state to reflect changes immediately in View mode
+      const updatedCatch = { ...selectedCatch, ...updatedData, image_url: imageUrl };
+      // Map back to DB field names if needed for view state, but fetchCatches checks DB.
+      // Easiest is to just refresh list and keep selection open? 
+      // Or just close selection. Let's close selection for now as "Save" usually implies done.
+      // But user might want to see it. Let's switch back to Read-Only view of the updated item.
+
+      setIsEditing(false);
+      // We need to refresh the list to get exact DB state (dates etc)
+      fetchCatches();
+      // We also need to update selectedCatch to show new values in Read-Only
+      // We'll rely on fetchCatches to get data, but selectedCatch needs update.
+      // Ideally we find the new item in the new list. 
+      // For simpler logic, let's just close for now or Re-fetch and Find.
+      // We'll just set selection to null to be safe, or user can re-select.
+      // Actually, better UX: Go back to view mode.
+      setSelectedCatch(null);
     } catch (error) {
       alert('Kunde inte uppdatera: ' + error.message)
     }
@@ -150,8 +194,11 @@ function App() {
       <CatchForm
         onAddCatch={addCatch}
         onUpdateCatch={updateCatch}
-        editingCatch={editingCatch}
-        onCancelEdit={() => setEditingCatch(null)}
+        selectedCatch={selectedCatch}
+        isEditing={isEditing}
+        onStartEdit={startEditing}
+        onCancelEdit={cancelEdit}
+        onClose={closeSelection}
       />
       {loading ? (
         <p style={{ textAlign: 'center', color: '#94a3b8' }}>Laddar fångster...</p>
@@ -159,7 +206,7 @@ function App() {
         <CatchList
           catches={catches}
           onDelete={deleteCatch}
-          onEdit={setEditingCatch}
+          onView={viewCatch}
         />
       )}
     </div>
