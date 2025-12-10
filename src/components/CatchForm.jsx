@@ -54,6 +54,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
     const [formData, setFormData] = useState({
         species: '',
         weight: '',
+        length: '',
         bait: '',
         location: '',
         lat: null,
@@ -70,6 +71,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
             setFormData({
                 species: editingCatch.species || '',
                 weight: editingCatch.weight || '',
+                length: editingCatch.length || '',
                 bait: editingCatch.bait || '',
                 location: editingCatch.location || '',
                 lat: editingCatch.latitude ? parseFloat(editingCatch.latitude) : null,
@@ -82,6 +84,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
             setFormData({
                 species: '',
                 weight: '',
+                length: '',
                 bait: '',
                 location: '',
                 lat: null,
@@ -262,7 +265,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
 
         if (!editingCatch) {
             setFormData({
-                species: '', weight: '', bait: '', location: '', catchDate: new Date().toISOString().slice(0, 16), airTemp: '', waterTemp: ''
+                species: '', weight: '', length: '', bait: '', location: '', catchDate: new Date().toISOString().slice(0, 16), airTemp: '', waterTemp: ''
             });
         }
     };
@@ -309,20 +312,21 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                         </p>
                     )}
                 </div>
+                <div style={{ marginBottom: '1rem' }}>
+                    <label htmlFor="species">Art</label>
+                    <input
+                        id="species"
+                        name="species"
+                        placeholder="T.ex. Gädda"
+                        required
+                        value={formData.species}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        data-lpignore="true"
+                    />
+                </div>
+
                 <div className="form-grid">
-                    <div>
-                        <label htmlFor="species">Art</label>
-                        <input
-                            id="species"
-                            name="species"
-                            placeholder="T.ex. Gädda"
-                            required
-                            value={formData.species}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            data-lpignore="true"
-                        />
-                    </div>
                     <div>
                         <label htmlFor="weight">Vikt (kg)</label>
                         <input
@@ -333,6 +337,20 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, editingCatch, onC
                             placeholder="0.0"
                             required
                             value={formData.weight}
+                            onChange={handleChange}
+                            autoComplete="off"
+                            data-lpignore="true"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="length">Längd (cm)</label>
+                        <input
+                            id="length"
+                            name="length"
+                            type="number"
+                            step="1"
+                            placeholder="0"
+                            value={formData.length}
                             onChange={handleChange}
                             autoComplete="off"
                             data-lpignore="true"

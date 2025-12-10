@@ -42,7 +42,7 @@ export default function CatchList({ catches, onDelete, onEdit }) {
                     onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
                 >
                     <div>
-                        <span className="catch-title">{item.species} - {item.weight} kg</span>
+                        <span className="catch-title">{item.species} - {item.weight} kg {item.length && `, ${item.length} cm`}</span>
                         <div className="catch-details">
                             {item.latitude && item.longitude ? (
                                 <a

@@ -56,6 +56,7 @@ function App() {
         .insert([{
           species: newCatch.species,
           weight: parseFloat(newCatch.weight),
+          length: newCatch.length ? parseFloat(newCatch.length) : null,
           bait: newCatch.bait,
           location: newCatch.location,
           air_temp: newCatch.airTemp ? parseFloat(newCatch.airTemp) : null,
@@ -120,6 +121,7 @@ function App() {
         .update({
           species: updatedData.species,
           weight: parseFloat(updatedData.weight),
+          length: updatedData.length ? parseFloat(updatedData.length) : null,
           bait: updatedData.bait,
           location: updatedData.location,
           air_temp: updatedData.airTemp ? parseFloat(updatedData.airTemp) : null,
