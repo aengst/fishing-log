@@ -1,8 +1,11 @@
 :root {
   /* Premium Nature Palette */
-  --color-bg-main: #0f172a; /* Deep Navy/Slate */
-  --color-bg-card: #1e293b; /* Lighter Slate */
-  --color-accent: #38bdf8; /* Sky Blue */
+  --color-bg-main: #0f172a;
+  /* Deep Navy/Slate */
+  --color-bg-card: #1e293b;
+  /* Lighter Slate */
+  --color-accent: #38bdf8;
+  /* Sky Blue */
   --color-accent-hover: #0ea5e9;
   --color-text-main: #f8fafc;
   --color-text-muted: #94a3b8;
@@ -10,10 +13,10 @@
   --color-input-bg: #0f172a;
 
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  
+
   --radius-md: 12px;
   --radius-lg: 16px;
-  
+
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
   --glass-effect: rgba(30, 41, 59, 0.7);
 }
@@ -75,7 +78,8 @@ label {
   margin-bottom: 0.5rem;
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 0.75rem;
   border-radius: var(--radius-md);
@@ -85,7 +89,8 @@ input, select {
   font-size: 1rem;
   margin-bottom: 1rem;
   transition: border-color 0.2s;
-  box-sizing: border-box; /* Fix padding issues */
+  box-sizing: border-box;
+  /* Fix padding issues */
 }
 
 input:focus {
@@ -120,29 +125,135 @@ button:active {
   gap: 1rem;
 }
 
-/* Catch List */
-.catch-item {
-  border-bottom: 1px solid var(--color-border);
-  padding: 1rem 0;
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--color-text-muted);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: rgba(30, 41, 59, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+/* Improved Catch Card */
+.catch-card {
+  background-color: var(--color-bg-card);
+  /* Should match card bg or slightly lighter? */
+  background-color: rgba(255, 255, 255, 0.03);
+  /* Subtle contrast against container */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.catch-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.catch-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.75rem;
 }
 
-.catch-item:last-child {
-  border-bottom: none;
+.catch-species {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-main);
 }
 
-.catch-details span {
-  display: inline-block;
-  margin-right: 1rem;
-  font-size: 0.9rem;
+.catch-date {
+  font-size: 0.85rem;
   color: var(--color-text-muted);
 }
 
-.catch-title {
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-bottom: 0.25rem;
-  display: block;
+.catch-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+}
+
+.catch-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.catch-stats-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.catch-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.catch-image-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.catch-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-icon {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  padding: 0.4rem 0.8rem;
+  width: auto;
+  font-size: 0.85rem;
+}
+
+.btn-icon:hover {
+  color: var(--color-text-main);
+  border-color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary-ghost {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--color-accent);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  width: auto;
+  padding: 0.5rem 1rem;
+}
+
+.btn-primary-ghost:hover {
+  background: rgba(56, 189, 248, 0.2);
 }
