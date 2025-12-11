@@ -179,7 +179,12 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
 
                     {readOnly && selectedCatch && selectedCatch.image_url && (
                         <div style={{ marginBottom: '1.5rem', borderRadius: '12px', overflow: 'hidden' }}>
-                            <img src={selectedCatch.image_url} alt="Fångst" style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', backgroundColor: '#000' }} />
+                            <img
+                                src={selectedCatch.image_url}
+                                alt="Fångst"
+                                onClick={() => window.open(selectedCatch.image_url, '_blank')}
+                                style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', backgroundColor: '#000', cursor: 'pointer' }}
+                            />
                         </div>
                     )}
 

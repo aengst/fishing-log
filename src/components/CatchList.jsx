@@ -126,7 +126,6 @@ export default function CatchList({ catches, onDelete, onView }) {
                         {item.image_url && (
                             <div
                                 className="catch-image-container"
-                                onClick={(e) => { e.stopPropagation(); window.open(item.image_url, '_blank'); }}
                             >
                                 <img
                                     src={item.image_url}
