@@ -63,7 +63,19 @@ export default function MapSection({ lat, lng, setMapPosition, readOnly }) {
                     />
                 </MapContainer>
             </div>
-            {lat && <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.5rem' }}>Vald position: {lat.toFixed(4)}, {lng.toFixed(4)}</p>}
+            {lat && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>Vald position: {lat.toFixed(4)}, {lng.toFixed(4)}</p>
+                    <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: '0.8rem', color: '#3b82f6', textDecoration: 'none' }}
+                    >
+                        Öppna i Google Maps ↗
+                    </a>
+                </div>
+            )}
         </div>
     );
 }

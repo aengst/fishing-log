@@ -39,6 +39,42 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
     }, [weatherData]);
 
 
+    useEffect(() => {
+        if (selectedCatch) {
+            setFormData({
+                species: selectedCatch.species || '',
+                weight: selectedCatch.weight || '',
+                length: selectedCatch.length || '',
+                bait: selectedCatch.bait || '',
+                location: selectedCatch.location || '',
+                lat: selectedCatch.latitude ? parseFloat(selectedCatch.latitude) : null,
+                lng: selectedCatch.longitude ? parseFloat(selectedCatch.longitude) : null,
+                catchDate: selectedCatch.catch_date ? new Date(selectedCatch.catch_date).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
+                airTemp: selectedCatch.air_temp || '',
+                waterTemp: selectedCatch.water_temp || '',
+                windSpeed: selectedCatch.wind_speed || '',
+                windDirection: selectedCatch.wind_direction,
+                weatherDescription: selectedCatch.weather_description || ''
+            });
+        } else {
+            setFormData({
+                species: '',
+                weight: '',
+                length: '',
+                bait: '',
+                location: '',
+                lat: null,
+                lng: null,
+                catchDate: new Date().toISOString().slice(0, 16),
+                airTemp: '',
+                waterTemp: '',
+                windSpeed: '',
+                windDirection: '',
+                weatherDescription: ''
+            });
+        }
+    }, [selectedCatch]);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
