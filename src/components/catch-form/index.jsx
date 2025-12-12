@@ -7,7 +7,7 @@ import ImageUpload from './ImageUpload';
 import WeatherSection from './WeatherSection';
 import CatchDetailsFields from './CatchDetailsFields';
 
-export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, isEditing, onStartEdit, onCancelEdit, onClose }) {
+export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, isEditing, onStartEdit, onCancelEdit, onClose, onNext, onPrevious, hasNext, hasPrevious }) {
     const readOnly = selectedCatch && !isEditing;
 
     const [formData, setFormData] = useState({
@@ -23,7 +23,8 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
         waterTemp: '',
         windSpeed: '',
         windDirection: '',
-        weatherDescription: ''
+        weatherDescription: '',
+        fishingMethod: ''
     });
 
     const { identify, isIdentifying } = useAIIdentification();
@@ -45,6 +46,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
                 species: selectedCatch.species || '',
                 weight: selectedCatch.weight || '',
                 length: selectedCatch.length || '',
+                fishingMethod: selectedCatch.fishing_method || '',
                 bait: selectedCatch.bait || '',
                 location: selectedCatch.location || '',
                 lat: selectedCatch.latitude ? parseFloat(selectedCatch.latitude) : null,
@@ -70,7 +72,8 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
                 waterTemp: '',
                 windSpeed: '',
                 windDirection: '',
-                weatherDescription: ''
+                weatherDescription: '',
+                fishingMethod: ''
             });
         }
     }, [selectedCatch]);
@@ -136,7 +139,7 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
 
         if (!selectedCatch) {
             setFormData({
-                species: '', weight: '', length: '', bait: '', location: '', catchDate: new Date().toISOString().slice(0, 16), airTemp: '', waterTemp: '', windSpeed: '', windDirection: '', weatherDescription: ''
+                species: '', weight: '', length: '', fishingMethod: '', bait: '', location: '', catchDate: new Date().toISOString().slice(0, 16), airTemp: '', waterTemp: '', windSpeed: '', windDirection: '', weatherDescription: ''
             });
         }
     };
@@ -149,6 +152,46 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
                         ? (isEditing ? 'Redigera Fångst' : 'Fångstdetaljer')
                         : 'Ny Fångst'}
                 </h2>
+                {readOnly && (
+                    <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto', marginRight: '1rem' }}>
+                        <button
+                            type="button"
+                            onClick={onPrevious}
+                            disabled={!hasPrevious}
+                            style={{
+                                backgroundColor: 'transparent',
+                                border: '1px solid var(--color-border)',
+                                color: hasPrevious ? 'var(--color-text-main)' : 'var(--color-text-muted)',
+                                cursor: hasPrevious ? 'pointer' : 'not-allowed',
+                                fontSize: '1.2rem',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '8px',
+                                opacity: hasPrevious ? 1 : 0.5
+                            }}
+                            title="Föregående (nyare)"
+                        >
+                            ⬅️
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onNext}
+                            disabled={!hasNext}
+                            style={{
+                                backgroundColor: 'transparent',
+                                border: '1px solid var(--color-border)',
+                                color: hasNext ? 'var(--color-text-main)' : 'var(--color-text-muted)',
+                                cursor: hasNext ? 'pointer' : 'not-allowed',
+                                fontSize: '1.2rem',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: '8px',
+                                opacity: hasNext ? 1 : 0.5
+                            }}
+                            title="Nästa (äldre)"
+                        >
+                            ➡️
+                        </button>
+                    </div>
+                )}
                 {readOnly && (
                     <button
                         type="button"
@@ -166,7 +209,23 @@ export default function CatchForm({ onAddCatch, onUpdateCatch, selectedCatch, is
                         ❌ Stäng
                     </button>
                 )}
-                {!selectedCatch && <span></span>}
+                {(readOnly || !selectedCatch) && (
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        style={{
+                            backgroundColor: 'transparent',
+                            border: '1px solid var(--color-border)',
+                            color: 'var(--color-text-main)',
+                            fontSize: '0.9rem',
+                            padding: '0.4rem 0.8rem',
+                            cursor: 'pointer',
+                            width: 'auto'
+                        }}
+                    >
+                        ❌ Stäng
+                    </button>
+                )}
             </div>
 
             <form onSubmit={handleSubmit} autoComplete="off">

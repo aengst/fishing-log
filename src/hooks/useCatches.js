@@ -43,7 +43,8 @@ export function useCatches() {
                 image_url: imageUrl,
                 wind_speed: catchData.windSpeed ? parseFloat(catchData.windSpeed) : null,
                 wind_direction: catchData.windDirection ? parseFloat(catchData.windDirection) : null,
-                weather_description: catchData.weatherDescription || null
+                weather_description: catchData.weatherDescription || null,
+                fishing_method: catchData.fishingMethod
             });
 
             fetchCatches();
@@ -88,7 +89,8 @@ export function useCatches() {
                 image_url: imageUrl,
                 wind_speed: updatedData.windSpeed ? parseFloat(updatedData.windSpeed) : null,
                 wind_direction: updatedData.windDirection ? parseFloat(updatedData.windDirection) : null,
-                weather_description: updatedData.weatherDescription || null
+                weather_description: updatedData.weatherDescription || null,
+                fishing_method: updatedData.fishingMethod
             });
 
             fetchCatches();

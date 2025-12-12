@@ -77,17 +77,34 @@ export default function CatchDetailsFields({ formData, handleChange }) {
                 </div>
             </div>
 
-            <div>
-                <label htmlFor="bait">Bete</label>
-                <input
-                    id="bait"
-                    name="bait"
-                    placeholder="T.ex. Jigg, Mask"
-                    value={formData.bait}
-                    onChange={handleChange}
-                    autoComplete="off"
-                    data-lpignore="true"
-                />
+            <div className="form-grid">
+                <div>
+                    <label htmlFor="fishingMethod">Fiskesätt</label>
+                    <select
+                        id="fishingMethod"
+                        name="fishingMethod"
+                        value={formData.fishingMethod}
+                        onChange={handleChange}
+                    >
+                        <option value="">Välj metod...</option>
+                        <option value="Fluga">Fluga</option>
+                        <option value="Spinn">Spinn</option>
+                        <option value="Mete">Mete</option>
+                        <option value="Havsfiske">Havsfiske</option>
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="bait">Bete</label>
+                    <input
+                        id="bait"
+                        name="bait"
+                        placeholder="T.ex. Jigg, Mask"
+                        value={formData.bait}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        data-lpignore="true"
+                    />
+                </div>
             </div>
         </>
     );
